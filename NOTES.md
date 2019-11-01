@@ -1,9 +1,9 @@
 # Gradle & Java Development
 
 ## Goals:
-Understand gradle build scripts and its language
-Build a simple Java application with gradle
-Document findings
+* Understand gradle build scripts and its language
+* Build a simple Java application with gradle
+* Document findings
 
 ## Groovy
 Groovy is an object oriented programming language with features that allow quick development of custom  domain specific languages.
@@ -187,6 +187,112 @@ dependencies {
 }
 ```
 
+## Spring Framework
 
+The Spring framework seems to be the most used framework for building web services in Java. We will try to build a simple REST service that lets us get a greeting and go from there.
+
+https://spring.io/guides/gs/rest-service/ provides a good starting tutorial.
+
+### Resource
+
+Spring automatically converts Java objects into JSON using the Jackson JSON library. So we only need to define a class that represents our resource and marshalling will be handled by Spring and Jackson. Next we need to define a controller that serves objects of the resource. So we end up with the following two files:
+
+```java
+package learn_java_rest.rest_resources;
+
+public class Greeting {
+    private final long id;
+    private final String content;
+
+    public Greeting(long id, String content) {
+        this.id = id;
+        this.content = content;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+}
+```
+
+```java
+package learn_java_rest.rest_controllers;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import learn_java_rest.rest_resources.Greeting;
+
+import java.util.concurrent.atomic.AtomicLong;
+
+@RestController
+public class GreetingController {
+
+    private static final String template = "Hello, %s!";
+    private final AtomicLong counter = new AtomicLong();
+
+    @RequestMapping(value = "/greeting", method = RequestMethod.GET)
+    public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
+        return new Greeting(counter.incrementAndGet(),
+                String.format(template, name));
+    }
+}
+```
+
+To run this application now we first need to have an entry point. This is done through our main application class. 
+
+```java
+package learn_java_rest;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+
+@SpringBootApplication
+public class APIServer {
+    public static void main(String[] args) {
+        SpringApplication.run(APIServer.class, args);
+    }
+}
+```
+
+Note that the dependencies that we import here need to be specified in our build.gradle like follows. Although the tutorial talks about using the springboot plugin I wanted to understand every line of the build.gradle so I tried to keep it as minimal as possible. This is what I ended up with:
+
+```groovy
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClassName = 'learn_java_rest.APIServer'
+}
+
+dependencies {
+    compile group: 'org.springframework', name: 'spring-context', version: '5.2.0.RELEASE'
+    compile group: 'org.springframework', name: 'spring-core', version: '5.2.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot', version: '2.2.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.2.0.RELEASE'
+    compile group: 'org.springframework', name: 'spring-web', version: '5.2.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.2.0.RELEASE'
+}
+
+```
+(I found these dependencies by first including only dependencies that where imported and then following the error messages. For example `spring-boot-starter-web` needs to be there otherwise the application will not be served but only built.)
+
+To run this application now we use `gradle`:
+```bash
+./gradlew -q run
+```
+
+If everything is setup correctly this will build and serve the application under http://localhost:8080 .
 
 

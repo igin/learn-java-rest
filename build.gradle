@@ -7,9 +7,15 @@ repositories {
 }
 
 application {
-    mainClassName = 'HelloWorld'
+    mainClassName = 'learn_java_rest.APIServer'
 }
 
 dependencies {
-    compile group: 'org.nanohttpd', name: 'nanohttpd', version: '2.3.1'
+    compile group: 'org.springframework', name: 'spring-context', version: '5.2.0.RELEASE'
+
+    compile group: 'org.springframework', name: 'spring-core', version: '5.2.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot', version: '2.2.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-autoconfigure', version: '2.2.0.RELEASE'
+    compile group: 'org.springframework', name: 'spring-web', version: '5.2.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.2.0.RELEASE'
 }
