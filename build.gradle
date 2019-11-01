@@ -1,0 +1,15 @@
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClassName = 'HelloWorld'
+}
+
+dependencies {
+    compile group: 'org.nanohttpd', name: 'nanohttpd', version: '2.3.1'
+}
